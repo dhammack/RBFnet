@@ -28,3 +28,16 @@ Theano is an incredible library from the perspective of a machine learning resea
 Climin
 ------
 
+
+
+Images
+======
+
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/circular_data.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/8_gaussians.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/hard_5_classes.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/6_classes_sgd.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/seperable_5_gaussians.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/4_classes_easy.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/6_classes_seperable.png)
+Graphics by Matplotlib. 
