@@ -41,3 +41,10 @@ Images
 ![alt tag](https://raw.github.com/dhammack/RBFnet/master/4_classes_easy.png)
 ![alt tag](https://raw.github.com/dhammack/RBFnet/master/6_classes_seperable.png)
 Graphics by Matplotlib. 
+
+
+Note
+====
+
+I made a change to gd.py in climin so that the optimizer can report cost per minibatch. It doesn't help with optimization at all, but it's something I like to see afterwards to kinow that things were working correctly. If you try to use 'sgd' as an optimizer, make sure to replace the gd.py in your climin installation with the version in this repo.
+
