@@ -1,9 +1,12 @@
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/circular_data.png)
+[for more see the Images section below]
+
 RBFnet
 ======
 
 RBF Network using Theano, climin, and sklearn. 
 
-Theano [http://deeplearning.net/software/theano/] and [https://github.com/Theano/Theano] is a python library which makes it easy to do symbolic computation with multidimensional arrays (see numpy.ndarray). 
+Theano [http://deeplearning.net/software/theano/] and [https://github.com/Theano/Theano] is a python library which makes it easy to do symbolic computation with multidimensional arrays. 
 
 Climin [https://climin.readthedocs.org/en/latest/] and [https://github.com/BRML/climin] is a python library for optimization. 
 
@@ -28,6 +31,26 @@ Theano is an incredible library from the perspective of a machine learning resea
 Climin
 ------
 
+Climin is a relatively new library for optimization (it's still in version 0.1). It's similar to scipy's optimize. Climin has good implementations of different optimization routines; Nonlinear Conjugate Gradient, Stochastic Gradient Descent, and Limited Memory BFGS are possible for training the RBF net. 
+
+When calling Trainer.train(), pass either 'sgd', 'ncg', or 'lbfgs' to choose the optimization routine.
+
+
+Sklearn
+-------
+
+Sklearn is a very widely used machine learning library. In this project, it was used to initialize the centroids for the RBF net, where minibatch k-means is the algorithm used. This can be seen as a form of unsupervised pre-training. 
+
+
+Results
+=======
+
+This is what I'm working on right now: getting some results from MNIST. Stay tuned.
+
+Future Development
+==================
+
+I've got some interesting things which I'm going to test out with RBF nets, as I think they have more potential than the machine learning community gives them credit for. Stay tuned.
 
 
 Images
