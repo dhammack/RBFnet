@@ -33,9 +33,9 @@ def exotic_data_gen(ppc=300):
 def gaussian_data_gen(points_per_class=500):		
 	#generate some data for model evaluation/building
 	ppc = points_per_class
-	sig = np.array([[.1,0],[0,.1]])
+	sig = np.array([[.3,0],[0,.3]])
 	#cents = [[-2,0],[2,0],[0,2],[0,-2]]
-	cents= [[-2,0],[2,0],[0,2],[0,-2],[2,2],[-2,2],[-2,-2],[2,-2]]
+	cents= [[-1,0],[0,0],[1,0]]
 	points,targets = [],[]
 	for i,c in enumerate(cents):
 		targets.append(np.ones((ppc,))*i)
@@ -68,8 +68,8 @@ def plot_stats(X,Y,model,costs):
 	y_cls = Trainer.onehot_to_int(y_onehot)
 	colors = get_cmap("RdYlGn")(np.linspace(0,1,cls_ct))
 	
-	model_cents = model.c.get_value()
-	p1.scatter(model_cents[:,0], model_cents[:,1], c='black', s=81)
+	#model_cents = model.c.get_value()
+	#p1.scatter(model_cents[:,0], model_cents[:,1], c='black', s=81)
 	for curclass,curcolor in zip(range(cls_ct),colors):
 		inds = [i for i,yi in enumerate(y_cls) if yi==curclass]
 		p1.scatter(X[inds,0], X[inds,1], c=curcolor)
@@ -103,7 +103,7 @@ def print_performance(model):
 	
 def theano_perf(model):
 	Xnew,ynew = gaussian_data_gen()
-	#Xnew,ynew = exotic_data_gen()
+	# Xnew,ynew = exotic_data_gen()
 	ynew_onehot = Trainer.class_to_onehot(ynew)
 	yhat = np.array(model.predict(Xnew))
 	yhat = Trainer.onehot_to_int(yhat)
@@ -119,11 +119,12 @@ if __name__ == '__main__':
 	#X,Y = exotic_data_gen(ppc=300)
 	
 	#initialize a model trainer.
-	trainer = Trainer('lbfgs', num_centers=25, batch_size=30, iters=200)
-	model, costs = trainer.build_and_train(X, Y)
+	trainer = Trainer('ncg', num_centers=20, batch_size=30, iters=30)
+	#model, costs = trainer.build_and_train_rbf(X, Y)
+	model, costs = trainer.build_and_train_nnet(X,Y)
 	
 	#convert to binary for graphing.
-	plot_stats(X,Y,model, costs)
+	plot_stats(X, Y, model, costs)
 	theano_perf(model)
 	
 	

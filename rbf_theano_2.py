@@ -55,11 +55,8 @@ class RBF_Network(object):
 		
 		difnorm = T.sum((C-X)**2, axis=-1).T
 		
-		#assert s>0
-		#self.s.set_value(np.maximum(self.s.get_value(),0.0))
 		a = T.exp(-difnorm.T * self.s.T).T
 		
-		#test
 		self.prob = T.nnet.sigmoid(T.dot(a.T, self.w) + self.b)
 		self.pred = T.round(self.prob)
 		self.pred_func = theano.function([input],outputs=self.pred)

@@ -5,6 +5,7 @@ import itertools
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans as kmeans
 from rbf_theano_2 import RBF_Network as theano_rbfnet
+from nnet import Neural_Net as nnet
 
 #class for training of models
 class Trainer(object):
@@ -15,7 +16,7 @@ class Trainer(object):
 		self.batch_size = batch_size
 		self.max_iters = iters
 		
-	def build_and_train(self, X, Y):
+	def build_and_train_rbf(self, X, Y):
 
 		y_onehot = self.class_to_onehot(Y)
 		n_dims = y_onehot.shape[1]
@@ -88,6 +89,77 @@ class Trainer(object):
 		model.set_params(init_params, template)
 		return model, costs
 	
+	
+	def build_and_train_nnet(self, X, Y):
+	
+		y_onehot = self.class_to_onehot(Y)
+		n_in = X.shape[1]
+		n_nodes = self.num_centers
+		n_out = y_onehot.shape[1]
+		
+		x = T.dmatrix()
+		y = T.imatrix()
+		
+		#bias1, bias2, weights1, weights2
+		template = [(n_nodes,), (n_out,), (n_in,n_nodes),(n_nodes,n_out)]
+
+		#initialize nnet
+		model = nnet(input=x, n_in=n_in, n_nodes=n_nodes, n_out=n_out)
+		cost = model.neg_log_likelihood(y)
+
+		g_b1 = T.grad(cost, model.b1)
+		g_b2 = T.grad(cost, model.b2)
+		g_w1 = T.grad(cost, model.w1)
+		g_w2 = T.grad(cost, model.w2)
+		
+		g_params = T.concatenate([g_b1.flatten(),g_b2.flatten(),
+									g_w1.flatten(),g_w2.flatten()])
+		
+		getcost = theano.function([x,y],outputs=cost)
+		getdcost = theano.function([x,y],outputs=g_params)
+
+		def cost_fcn(params,inputs,targets):
+			model.set_params(params,template)
+			x = inputs
+			y = targets
+			return getcost(x,y)
+
+		def cost_grad(params, inputs, targets):
+			model.set_params(params,template)
+			x = inputs
+			y = targets
+			return getdcost(x,y)
+
+		args = climin.util.iter_minibatches([X,y_onehot],self.batch_size,[0,0])
+		batch_args = itertools.repeat(([X,y_onehot],{}))
+		args = ((i,{}) for i in args)
+		init_params = model.get_params(template)
+
+		opt_sgd = climin.GradientDescent(init_params, cost_fcn, cost_grad,
+							steprate=0.01, momentum=0.99, args=args,
+							momentum_type="nesterov")
+
+		opt_ncg = climin.NonlinearConjugateGradient(init_params,
+													cost_fcn,
+													cost_grad, args=batch_args)
+
+		opt_lbfgs = climin.Lbfgs(init_params, cost_fcn,
+								cost_grad, args=batch_args)
+		#choose the optimizer
+		if self.optimizer=='sgd':
+			optimizer = opt_sgd
+		elif self.optimizer=='ncg':
+			optimizer = opt_ncg
+		else: optimizer = opt_lbfgs
+		
+		#do the actual training.
+		costs = []
+		for itr_info in optimizer:
+			if itr_info['n_iter'] > self.max_iters: break
+			costs.append(itr_info['loss'])
+			
+		model.set_params(init_params, template)
+		return model, costs
 	
 	def compute_centers(self,X):
 		#use kmeans to compute centroids
