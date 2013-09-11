@@ -1,4 +1,4 @@
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/circular_data.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/circular_data.png)
 [for more see the Images section below]
 
 RBFnet
@@ -56,13 +56,13 @@ I've got some interesting things which I'm going to test out with RBF nets, as I
 Images
 ======
 
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/circular_data.png)
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/8_gaussians.png)
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/hard_5_classes.png)
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/6_classes_sgd.png)
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/seperable_5_gaussians.png)
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/4_classes_easy.png)
-![alt tag](https://raw.github.com/dhammack/RBFnet/master/6_classes_seperable.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/circular_data.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/8_gaussians.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/hard_5_classes.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/6_classes_sgd.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/seperable_5_gaussians.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/4_classes_easy.png)
+![alt tag](https://raw.github.com/dhammack/RBFnet/master/pics/6_classes_seperable.png)
 Graphics by Matplotlib. 
 
 
