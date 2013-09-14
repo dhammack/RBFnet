@@ -268,7 +268,7 @@ class Trainer(object):
 		for yi in y:
 			ynew.append([1 if yi==cls else 0 for cls in classes])
 		
-		return np.array(ynew)
+		return np.array(ynew, dtype='int32')
 	
 	@staticmethod
 	def onehot_to_int(y_onehot):
