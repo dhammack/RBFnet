@@ -7,8 +7,9 @@ from climin import util
 class RBF_Network(object):
 		
 	def neg_log_likelihood(self, y):
-		return T.mean(T.nnet.binary_crossentropy(self.prob,y))
-	
+		return T.mean(T.nnet.binary_crossentropy(self.prob,y)) + self.reg*abs(self.s).mean()
+		#return T.mean(1-T.exp(-(self.prob-y)*(self.prob-y)))
+		
 	def errors(self, y):
 		return T.mean(T.neq(self.pred,y))
 		
@@ -37,27 +38,31 @@ class RBF_Network(object):
 			[b.flatten(),c.flatten(),s.flatten(),w.flatten()])
 		return flat
 		
-	def __init__(self,input,n_cents,centers,n_dims):
+	def __init__(self, input, n_cents, centers, n_dims, reg):
 		bias_init = randn(n_dims)
 		cents_init = centers
-		sigmas_init = np.abs(randn(n_cents))
+		sigmas_init = np.abs(randn(n_cents).reshape((n_cents,)))
 		weights_init = randn(n_cents*n_dims).reshape((n_cents,n_dims))
 		
-		self.b = theano.shared(bias_init, name='b') #bias
-		self.c = theano.shared(cents_init, name='c')
-		self.s = theano.shared(sigmas_init, name='s')
-		self.w = theano.shared(weights_init, name='w')
+		#regularization
+		self.reg = reg
+		
+		#
+		self.b = theano.shared(bias_init, name='b', borrow=True) #bias
+		self.c = theano.shared(cents_init, name='c', borrow=True)
+		self.s = theano.shared(sigmas_init, name='s', borrow=True)
+		self.w = theano.shared(weights_init, name='w', borrow=True)
 		
 		#thanks to comments by Pascal on the theano-users group,
 		#the idea is to use 3d tensors
 		C = self.c[np.newaxis, :, :]
 		X = input[:, np.newaxis, :]
 		
-		difnorm = T.sum((C-X)**2, axis=-1).T
+		difnorm = T.sum((C-X)**2, axis=-1)
 		
-		a = T.exp(-difnorm.T * self.s.T).T
+		a = T.exp(-difnorm * (self.s**2))
 		
-		self.prob = T.nnet.sigmoid(T.dot(a.T, self.w) + self.b)
+		self.prob = T.nnet.sigmoid(T.dot(a, self.w) + self.b)
 		self.pred = T.round(self.prob)
 		self.pred_func = theano.function([input],outputs=self.pred)
 		self.prob_func = theano.function([input],outputs=self.prob)

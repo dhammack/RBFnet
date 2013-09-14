@@ -8,6 +8,7 @@ class Neural_Net(object):
 		
 	def neg_log_likelihood(self, y):
 		return T.mean(T.nnet.binary_crossentropy(self.prob,y))
+		#return T.mean(1-T.exp(-(self.prob-y)*(self.prob-y)))
 	
 	def errors(self, y):
 		return T.mean(T.neq(self.pred,y))

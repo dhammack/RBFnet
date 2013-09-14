@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plot
 from pylab import imshow, get_cmap
 from trainer import Trainer
+import gzip
+import cPickle
 
 def exotic_data_gen(ppc=300):
 	#generate concentric rings
@@ -35,7 +37,7 @@ def gaussian_data_gen(points_per_class=500):
 	ppc = points_per_class
 	sig = np.array([[.3,0],[0,.3]])
 	#cents = [[-2,0],[2,0],[0,2],[0,-2]]
-	cents= [[-1,0],[0,0],[1,0]]
+	cents= [[-2,0],[0,2],[2,0]]
 	points,targets = [],[]
 	for i,c in enumerate(cents):
 		targets.append(np.ones((ppc,))*i)
@@ -91,8 +93,6 @@ def plot_stats(X,Y,model,costs):
 	plot.show()					
 							
 	
-
-	
 def print_performance(model):
 	Xnew,ynew = gaussian_data_gen()
 	yhat = np.array([model.predict(x)[1] for x in Xnew])
@@ -101,9 +101,9 @@ def print_performance(model):
 		errs += 1 if yh != t else 0
 	print errs,'errors.'
 	
-def theano_perf(model):
-	Xnew,ynew = gaussian_data_gen()
-	# Xnew,ynew = exotic_data_gen()
+def theano_perf(model, Xnew, Ynew):
+	#Xnew,ynew = gaussian_data_gen()
+	#Xnew,ynew = exotic_data_gen()
 	ynew_onehot = Trainer.class_to_onehot(ynew)
 	yhat = np.array(model.predict(Xnew))
 	yhat = Trainer.onehot_to_int(yhat)
@@ -113,19 +113,44 @@ def theano_perf(model):
 	err_rate = 100*float(errs)/ynew.shape[0]
 	print 'Accuracy:',100-err_rate,'Errors:',errs
 	
+def graph_cost(cost):
+	#simple plot of cost over time
+	#todo: extend to plot validation as well
+	plot.plot(range(len(costs)), costs)
+	#plot.set_title("cost over time.")
+	plot.show()
+	
+def load_mnist():
+	#load the mnist data
+	f = gzip.open('mnist.pkl.gz')
+	train_set, val_set, test_set = cPickle.load(f)
+	f.close()
+	Xtrain, Ytrain = train_set
+	Xval, Yval = val_set
+	Xtest, Ytest = test_set
+	return Xtrain, Xval, Xtest, Ytrain, Yval, Ytest
+	
 if __name__ == '__main__':
 	#generate some training data [toy example]
-	X,Y = gaussian_data_gen(points_per_class=200)
-	#X,Y = exotic_data_gen(ppc=300)
+	#Xtrain,Ytrain = gaussian_data_gen(points_per_class=200)
+	#Xtrain,Ytrain = exotic_data_gen(ppc=300)
+	Xtrain, Xval, Xtest, Ytrain, Yval, Ytest = load_mnist()
 	
 	#initialize a model trainer.
-	trainer = Trainer('ncg', num_centers=20, batch_size=30, iters=30)
-	#model, costs = trainer.build_and_train_rbf(X, Y)
-	model, costs = trainer.build_and_train_nnet(X,Y)
+	trainer = Trainer('ncg', l1_size=300, l2_size=100,
+					batch_size=50, iters=200, reg=0.1)
+	print 'training.'
 	
+	model, costs = trainer.build_and_train_rbf(Xtrain, Ytrain)
+	#model, costs = trainer.build_and_train_nnet(Xtrain, Ytrain)
+	#model, costs = trainer.build_and_train_dkm(Xtrain, Ytrain)
+	
+	for cost in costs:
+		print cost
 	#convert to binary for graphing.
-	plot_stats(X, Y, model, costs)
-	theano_perf(model)
+	#plot_stats(Xtrain, Ytrain, model, costs)
+	theano_perf(model, Xval, Yval)
+	#graph_cost(costs)
 	
 	
 	print 'done.'
